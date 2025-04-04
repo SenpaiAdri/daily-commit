@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
+          fetch-depth: 0 
 
       - name: Update timestamp
         run: |
@@ -26,4 +27,6 @@ jobs:
           git commit -m "Daily update: $(date)" || echo "No changes to commit"
 
       - name: Push changes
-        run: git push origin main
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/SenpaiAdri/daily-commit.git
+          git push origin main
