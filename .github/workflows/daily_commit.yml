@@ -2,18 +2,19 @@ name: Daily Commit
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+    - cron: '0 0 * * *'  # Daily at midnight UTC
   workflow_dispatch:
 
 jobs:
   update-file:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write 
 
     steps:
       - uses: actions/checkout@v4
         with:
-          persist-credentials: true  # Retain credentials for subsequent steps
-          token: ${{ secrets.GITHUB_TOKEN }}  # Explicitly use the token
+          persist-credentials: true
 
       - name: Update timestamp
         run: |
@@ -27,5 +28,4 @@ jobs:
           git commit -m "Daily update: $(date)" || echo "No changes to commit"
 
       - name: Push changes
-        run: |
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/SenpaiAdri/daily-commit.git HEAD:main
+        run: git push origin main
