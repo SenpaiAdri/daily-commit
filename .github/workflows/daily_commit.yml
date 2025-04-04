@@ -1,0 +1,36 @@
+name: Daily Commit
+
+# This schedule triggers the workflow every day at midnight UTC.
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:  # Allows manual triggering for testing
+
+jobs:
+  update-file:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository
+      - uses: actions/checkout@v3
+
+      # Step 2: Update or create a file with the current timestamp
+      - name: Update timestamp
+        run: |
+          echo "Last update: $(date)" > timestamp.txt
+
+      # Step 3: Configure Git and commit the change if there are any updates
+      - name: Commit changes
+        run: |
+          git config --local user.name "SenpaiAdri"
+          git config --local user.email "adrian31dg@gmail.com"
+          git add timestamp.txt
+          # If there are no changes, the commit command will fail;
+          # the '|| echo "No changes to commit"' prevents the workflow from failing.
+          git commit -m "Daily update $(date)" || echo "No changes to commit"
+
+      # Step 4: Push the changes back to GitHub
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
