@@ -12,8 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          persist-credentials: true
-          fetch-depth: 0 
+          persist-credentials: true  # Retain credentials for subsequent steps
+          token: ${{ secrets.GITHUB_TOKEN }}  # Explicitly use the token
 
       - name: Update timestamp
         run: |
@@ -28,5 +28,4 @@ jobs:
 
       - name: Push changes
         run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/SenpaiAdri/daily-commit.git
-          git push origin main
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/SenpaiAdri/daily-commit.git HEAD:main
