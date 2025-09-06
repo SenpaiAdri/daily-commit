@@ -1,19 +1,27 @@
-name: Daily Commit
+name: Daily Commit (Randomized)
 
 on:
   schedule:
-    - cron: '0 16 * * *'  # Daily at midnight UTC
-    #- cron: '0 12 * * *'  # Daily at noon UTC
-    
+    - cron: '0 * * * *'   # Runs every hour
   workflow_dispatch:
 
 jobs:
   update-file:
     runs-on: ubuntu-latest
     permissions:
-      contents: write 
+      contents: write
 
     steps:
+      - name: Random run gate
+        run: |
+          # RANDOM returns 0–32767
+          # Adjust divisor to control probability:
+          # % 2 => ~12/day, % 3 => ~8/day, % 6 => ~4/day, etc.
+          if [ $(( RANDOM % 3 )) -ne 0 ]; then
+            echo "Skipping this run..."
+            exit 0
+          fi
+
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
@@ -27,8 +35,8 @@ jobs:
           git config --local user.name "SenpaiAdri"
           git config --local user.email "adrian31dg@gmail.com"
           git add timestamp.txt
-          git commit -m "Daily update: $(date)" || echo "No changes to commit"
+          git commit -m "Random update: $(date)" || echo "No changes to commit"
 
       - name: Push changes
-        run: git push origin main
-
+        run: |
+          git push origin main
