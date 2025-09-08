@@ -2,7 +2,7 @@ name: Daily Commit (Randomized)
 
 on:
   schedule:
-    - cron: '0 * * * *'   # Runs every hour
+    - cron: '0 * * * *'   # Every hour
   workflow_dispatch:
 
 jobs:
@@ -12,19 +12,28 @@ jobs:
       contents: write
 
     steps:
-      - name: Random run gate
-        run: |
-          # RANDOM returns 0–32767
-          # Adjust divisor to control probability:
-          # % 2 => ~12/day, % 3 => ~8/day, % 6 => ~4/day, etc.
-          if [ $(( RANDOM % 3 )) -ne 0 ]; then
-            echo "Skipping this run..."
-            exit 0
-          fi
-
       - uses: actions/checkout@v4
         with:
           persist-credentials: true
+          fetch-depth: 0
+
+      - name: Decide whether to run (curvy 1–4 commits/day)
+        run: |
+          set -e
+          # Deterministic daily target in [1,4] derived from today's date
+          today=$(date -u +%Y-%m-%d)
+          checksum=$(printf "%s" "$today" | cksum | awk '{print $1}')
+          target=$(( (checksum % 4) + 1 ))
+          echo "Daily target commits for $today (UTC): $target"
+
+          # Count commits already made today on this branch
+          commits_today=$(git log --since=00:00 --oneline | wc -l)
+          echo "Commits today so far: $commits_today"
+
+          if [ "$commits_today" -ge "$target" ]; then
+            echo "Target reached ($commits_today/$target). Skipping this run."
+            exit 0
+          fi
 
       - name: Update timestamp
         run: |
