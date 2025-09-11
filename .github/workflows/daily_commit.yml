@@ -2,7 +2,7 @@ name: Daily Commit (Randomized)
 
 on:
   schedule:
-    - cron: '0 * * * *'   # Runs every hour
+    - cron: '0 * * * *'   # Every hour
   workflow_dispatch:
 
 jobs:
@@ -14,10 +14,8 @@ jobs:
     steps:
       - name: Random run gate
         run: |
-          # RANDOM returns 0–32767
-          # Adjust divisor to control probability:
-          # % 2 => ~12/day, % 3 => ~8/day, % 6 => ~4/day, etc.
-          if [ $(( RANDOM % 3 )) -ne 0 ]; then
+          # ~3/day = 1 in 8 chance (24 hours / 8 = 3 runs avg)
+          if [ $(( RANDOM % 8 )) -ne 0 ]; then
             echo "Skipping this run..."
             exit 0
           fi
