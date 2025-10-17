@@ -1,0 +1,36 @@
+name: Daily Auto Contribution
+
+on:
+  schedule:
+    # Runs daily at 02:17 UTC
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-auto-contrib
+  cancel-in-progress: false
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Configure git author
+        run: |
+          git config user.name "SenpaiAdri"
+          git config user.email "adrian31dg@gmail.com"
+
+      - name: Run auto commit script
+        run: bash scripts/auto-commit.sh
+
+      - name: Push changes
+        run: git push
+
+
