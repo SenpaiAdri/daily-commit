@@ -15,7 +15,7 @@ if [[ ! -f "$LOG_FILE" ]]; then
 fi
 
 # Random number between 1 and 3 (inclusive)
-NUM_COMMITS=$(( (RANDOM % 3) + 1 ))
+NUM_COMMITS=$(( (RANDOM % 4) + 2 ))
 
 for ((i=1; i<=NUM_COMMITS; i++)); do
   echo "$(date -u +'%Y-%m-%dT%H:%M:%SZ') commit $i" >> "$LOG_FILE"
