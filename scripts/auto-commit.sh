@@ -14,8 +14,8 @@ if [[ ! -f "$LOG_FILE" ]]; then
   git commit -m "chore: initialize daily log"
 fi
 
-# Random number between 1 and 3 (inclusive)
-NUM_COMMITS=$(( (RANDOM % 4) + 2 ))
+# Random number between 1 and 4 (inclusive)
+NUM_COMMITS=$(( (RANDOM % 4) + 1 ))
 
 for ((i=1; i<=NUM_COMMITS; i++)); do
   echo "$(date -u +'%Y-%m-%dT%H:%M:%SZ') commit $i" >> "$LOG_FILE"
